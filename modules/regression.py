@@ -2,6 +2,32 @@ import numpy as np
 import pandas as pd
 from scipy.stats import f
 
+def eqtl_analysis(exp_df, genotype_df, file_prefix=""):
+    e_data = exp_df.drop(columns='GENE_SYMBOL')
+    num_genes = len(exp_df)
+    reg_results = pd.DataFrame(columns=['SNP', 'chromosome', 'position', 'gene', 'p-value'])
+
+    gene_locus = genotype_df.iloc[:, 0]
+    genotypes = genotype_df.drop(columns = ['Locus', 'Chr_Build37', 'Build37_position'])
+    
+    # Remove heterozygous markers
+    genotypes = genotypes.replace({'B': 0, 'b': 0, 'D':2, 'H': np.nan, 'U': np.nan})
+     
+    for i in tqdm(range(0, num_genes)):
+        gene = exp_df.iloc[i]['GENE_SYMBOL']
+        logpval_list, pval_list = run_regression(genotypes, gene_locus, e_data.iloc[[i]])
+
+        # store results
+        values = genotype_df[['Locus','Chr_Build37', 'Build37_position']].copy() 
+        values.columns = ['SNP', 'chromosome', 'position']
+        values['gene'] = gene
+        values['p-value'] = np.array(pval_list)
+        values['minus_log_p-value'] = np.array(logpval_list)
+
+        reg_results = pd.concat([reg_results,values])
+        
+    reg_results.to_csv(file_prefix + "reg_results.csv")
+    return reg_results
 
 def regression_model(x, y):
     """ Given the samplesm, implement and run a regression model in which
