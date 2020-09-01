@@ -1,7 +1,36 @@
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from scipy.stats import f
 
+def qtl_analysis(phenotype_df, genotype_df, file_prefix=""):
+    p_data = phenotype_df.drop(columns=['Phenotype', 'Authors', 'Year', 'Pubmed Id'])
+    num_phenotypes = len(phenotype_df)
+    reg_results = pd.DataFrame(columns=['SNP', 'chromosome', 'position', 'gene', 'p-value'])
+
+    gene_locus = genotype_df.iloc[:, 0]
+    genotypes = genotype_df.drop(columns = ['Locus', 'Chr_Build37', 'Build37_position'])
+    
+    # Remove heterozygous markers
+    genotypes = genotypes.replace({'B': 0, 'b': 0, 'D':2, 'H': np.nan, 'U': np.nan})
+     
+    for i in tqdm(range(0, num_phenotypes)):
+        phenotype = phenotype_df.iloc[i]['Phenotype']
+        logpval_list, pval_list = run_regression(genotypes, gene_locus, p_data.iloc[[i]])
+
+        # store results
+        values = genotype_df[['Locus','Chr_Build37', 'Build37_position']].copy() 
+        values.columns = ['SNP', 'chromosome', 'position']
+        values['phenotype'] = phenotype
+        values['p-value'] = np.array(pval_list)
+        values['minus_log_p-value'] = np.array(logpval_list)
+
+        reg_results = pd.concat([reg_results,values])
+        
+    reg_results.to_csv(file_prefix + "QTL_results.csv")
+    return reg_results
+
+	
 def eqtl_analysis(exp_df, genotype_df, file_prefix=""):
     e_data = exp_df.drop(columns='GENE_SYMBOL')
     num_genes = len(exp_df)
