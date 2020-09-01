@@ -5,6 +5,8 @@ def print_dim(n,m, title=""):
     print("* Expected num of tests: {:,}\n".format(n*m))
 	
 def print_stats(assoc_eqtl, num_tests, title=""):
+    bold_s = '\033[1m'
+    bold_e = '\033[0m'
     total = len(assoc_eqtl)
     cis = assoc_eqtl[assoc_eqtl['closeness'] == 'cis']
     trans = assoc_eqtl[assoc_eqtl['closeness'] == 'trans']
