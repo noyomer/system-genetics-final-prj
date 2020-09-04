@@ -127,6 +127,7 @@ def get_LR(m1_df, m2_df, m3_df):
 
     # Get max likelihoos
     max_model = np.argmax([L_m1, L_m2, L_m3])
+    print("Best model: ", max_model+1)
     others_models = [x for i,x in enumerate(range(0,3)) if i != max_model] 
 
     # Calculate the likelihood ratio
