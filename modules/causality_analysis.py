@@ -113,9 +113,9 @@ def generate_models_df(input_table):
     m3_df['P(L) * P(R|L) * P(C|L)'] = 0.5 * m3_df['P(C|L)'] * m3_df['P(R|L)']
     
     # Save as excel file
-    m1_df.to_excel("likelihood_formulas_M1.xlsx")
-    m2_df.to_excel("likelihood_formulas_M2.xlsx")
-    m3_df.to_excel("likelihood_formulas_M3.xlsx")
+    m1_df.to_excel("output/likelihood_formulas_M1.xlsx")
+    m2_df.to_excel("output/likelihood_formulas_M2.xlsx")
+    m3_df.to_excel("output/likelihood_formulas_M3.xlsx")
     
     return m1_df, m2_df, m3_df
 
@@ -127,17 +127,17 @@ def get_LR(m1_df, m2_df, m3_df):
 
     # Get max likelihoos
     max_model = np.argmax([L_m1, L_m2, L_m3])
-    print("Best model: ", max_model+1)
+    best_model = max_model+1
     others_models = [x for i,x in enumerate(range(0,3)) if i != max_model] 
 
     # Calculate the likelihood ratio
     LR = likelihood_arr[max_model] / max(likelihood_arr[others_models[0]], likelihood_arr[others_models[1]]) 
-    return LR
+    return LR, best_model
 
 
 def get_shuffled_df(df):
     """ Returns the given dataframe with 2 columns randomly shuffeled (L, R).
         No need to randomize the 3rd column """
-    df['L'] = df['L'].sample(frac = 1).values
+    df['C'] = df['C'].sample(frac = 1).values
     df['R'] = df['R'].sample(frac = 1).values
     return df
