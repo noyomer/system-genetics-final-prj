@@ -6,7 +6,7 @@ from scipy.stats import f
 def qtl_analysis(phenotype_df, genotype_df, file_prefix=""):
     p_data = phenotype_df.drop(columns=['Phenotype', 'Authors', 'Year', 'Pubmed Id'])
     num_phenotypes = len(phenotype_df)
-    reg_results = pd.DataFrame(columns=['SNP', 'chromosome', 'position', 'gene', 'p-value'])
+    reg_results = pd.DataFrame(columns=['SNP', 'chromosome', 'position', 'phenotype', 'p-value'])
 
     gene_locus = genotype_df.iloc[:, 0]
     genotypes = genotype_df.drop(columns = ['Locus', 'Chr_Build37', 'Build37_position'])
