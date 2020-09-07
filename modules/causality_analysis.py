@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import math
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 def get_L_dependent_dist_params(df, A, l):
     """ Calculate the parameters of the distribution A|L=l.
@@ -158,7 +161,8 @@ def permutation_test(input_table, LR):
     plt.show()
     sns.distplot(model_dist, bins = 5, color='purple', kde=False, hist=True).set_title('Best Models Distribution Permutations Based')
     plt.xticks([])
-    
+    plt.show()
+	
     greater_values = len([x for x in LR_dist if x > LR])
     print("The are %d LR values that are greater than our LR" % greater_values)
     pval = (greater_values+1)/100
@@ -187,4 +191,4 @@ def causality_analysis(locus, gene_exp, phenotype):
     
     # Run permutation test for statistical estimation of LR 
     LR_dist, model_dist, pval = permutation_test(input_table, LR)
-    return LR, best_model, LR_dist, model_dist, pval, m1_df
+    return LR, best_model, LR_dist, model_dist, pval
