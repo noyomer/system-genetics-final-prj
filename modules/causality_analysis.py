@@ -141,3 +141,50 @@ def get_shuffled_df(df):
     df['C'] = df['C'].sample(frac = 1).values
     df['R'] = df['R'].sample(frac = 1).values
     return df
+	
+	
+def permutation_test(input_table, LR):
+    n_tests = 100
+    LR_dist = []
+    model_dist = []
+    for i in range(0,n_tests):
+        shuffled_df = get_shuffled_df(input_table.copy())
+        m1_df, m2_df, m3_df = generate_models_df(shuffled_df)
+        LR_i, M_i = get_LR(m1_df, m2_df, m3_df)
+        LR_dist.append(LR_i)
+        model_dist.append(M_i)
+    
+    sns.kdeplot(LR_dist, shade=True).set_title('LR Distribution Permutations Based')
+    plt.show()
+    sns.distplot(model_dist, bins = 5, color='purple', kde=False, hist=True).set_title('Best Models Distribution Permutations Based')
+    plt.xticks([])
+    
+    greater_values = len([x for x in LR_dist if x > LR])
+    print("The are %d LR values that are greater than our LR" % greater_values)
+    pval = (greater_values+1)/100
+    if pval <= 0.05:
+        print("Our LR is significant with p-value of ", pval)
+    else:
+        print("Our LR is not significant. p-value=", pval)
+    return LR_dist, model_dist, pval
+
+	
+def causality_analysis(locus, gene_exp, phenotype):
+    # Create input table 
+    input_table = pd.concat([locus, gene_exp, phenotype]) # concate data types
+    input_table = input_table.T.reset_index()             # transpose
+    input_table.columns = ['Individual', 'L', 'R', 'C']
+    input_table = input_table.dropna()                    # ignore nulls
+    input_table = input_table.sort_values(by='L')         # sort by lucus (genotype 0 or 2)
+    
+    # Generate models dataframe
+    m1_df, m2_df, m3_df = generate_models_df(input_table)
+    
+    #  Calculate The Models Likelihood and Likelihood Ratio. Estimate the best model.
+    LR, best_model = get_LR(m1_df, m2_df, m3_df)
+    print("The best model is: M", best_model)
+    print("The Likelihood-Ratio is: %.2f" % LR)
+    
+    # Run permutation test for statistical estimation of LR 
+    LR_dist, model_dist, pval = permutation_test(input_table, LR)
+    return LR, best_model, LR_dist, model_dist, pval, m1_df
