@@ -27,7 +27,7 @@ def qtl_analysis(phenotype_df, genotype_df, file_prefix=""):
 
         reg_results = pd.concat([reg_results,values])
         
-    reg_results.to_csv(file_prefix + "QTL_results.csv")
+    reg_results.to_csv("output/" + file_prefix + "QTL_results.csv")
     return reg_results
 
 	

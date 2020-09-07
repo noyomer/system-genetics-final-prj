@@ -6,7 +6,7 @@ def get_associations(reg_results, alpha=0.05):
     num_tests = len(reg_results)
     alpha_star = alpha / num_tests
     reg_results = reg_results[reg_results['p-value'] <= alpha_star]
-    return reg_results, num_tests
+    return reg_results, num_tests, alpha_star
 
 def cis_trans_annotation(reg_results, mgi_df, delta=2000000):
     """ Annotations of genes to cis-acting or trans-acting genes, with respect to a distnace treshold.
@@ -29,7 +29,7 @@ def cis_trans_annotation(reg_results, mgi_df, delta=2000000):
 
         curr_mgi = mgi_df[mgi_df['marker symbol'] == gene]
         chromosome = curr_mgi['representative genome chromosome'].iloc[0]
-        chromosome = 20 if chromosome in ['X', 'Y'] else int(chromosome) # TODO: y and x converting?
+        chromosome = 20 if chromosome in ['X', 'Y'] else int(chromosome) 
         start = curr_mgi['representative genome start'].iloc[0]
         end = curr_mgi['representative genome end'].iloc[0]
         cis_conditions = (reg_results['gene'] == gene) & \
