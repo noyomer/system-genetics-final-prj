@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
 
 """ ---------------------------------------------
@@ -57,7 +58,10 @@ def plot_association_pval_dist(assoc_eqtl, tissue_str=""):
 	sns.set_style("whitegrid")
 	plt.show()
 
-def plot_summary_visualization(reg_results, mgi_df, treshold, tissue_str=""):
+def plot_summary_visualization(reg_results, mgi_df, treshold=0.05, tissue_str=""):
+	# Drop mgi rows without chromosome data
+	mgi_df = mgi_df[~mgi_df['representative genome chromosome'].isna()]
+
 	# add positions data from mgi file
 	df = reg_results
 	df = df.rename(columns={'chromosome': 'snp_chromosome', 'position': 'snp_position'})

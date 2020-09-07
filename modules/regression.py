@@ -55,7 +55,7 @@ def eqtl_analysis(exp_df, genotype_df, file_prefix=""):
 
         reg_results = pd.concat([reg_results,values])
         
-    reg_results.to_csv(file_prefix + "reg_results.csv")
+    reg_results.to_csv("output/" + file_prefix + "reg_results.csv")
     return reg_results
 
 def regression_model(x, y):
